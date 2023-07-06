@@ -15,7 +15,7 @@ class ViewController: UIViewController {
     }()
     
     private lazy var my2Button: BounceButton = {
-        var button = BounceButton(title: "Second Button", imageSystemName: "arrow.forward.circle")
+        var button = BounceButton(title: "Second Medium Button", imageSystemName: "arrow.forward.circle")
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
