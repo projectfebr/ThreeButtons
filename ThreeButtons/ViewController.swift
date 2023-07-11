@@ -8,48 +8,42 @@
 import UIKit
 
 class ViewController: UIViewController {
-    private lazy var my1Button: BounceButton = {
-        var button = BounceButton(title: "First Button", imageSystemName: "arrow.forward.circle")
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
-    }()
-    
-    private lazy var my2Button: BounceButton = {
-        var button = BounceButton(title: "Second Medium Button", imageSystemName: "arrow.forward.circle")
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
-    }()
-    
-    private lazy var my3Button: BounceButton = {
-        var button = BounceButton(title: "Third Button", imageSystemName: "arrow.forward.circle")
-        button.addTarget(nil, action: #selector(openModal), for: .touchUpInside)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
-    }()
+    private let my1Button = BounceButton(title: "First Button")
+    private let my2Button = BounceButton(title: "Second Medium Button")
+    private let my3Button = BounceButton(title: "Third Button")
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.addSubview(my1Button)
         view.addSubview(my2Button)
         view.addSubview(my3Button)
-        setupConstraints()
+        
+        my3Button.addTarget(self, action: #selector(openModal), for: .touchUpInside)
+    }
+    
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        
+        if (my1Button.transform == .identity && my2Button.transform == .identity && my3Button.transform == .identity) {
+            my1Button.setInsets()
+            my1Button.center.x = view.frame.width/2
+            my1Button.frame.origin.y = view.safeAreaInsets.top
+            
+            my2Button.setInsets()
+            my2Button.center.x = my1Button.center.x
+            my2Button.frame.origin.y = my1Button.frame.maxY + 8
+            
+            my3Button.setInsets()
+            my3Button.center.x = my2Button.center.x
+            my3Button.frame.origin.y = my2Button.frame.maxY + 8
+        }
     }
     
     @objc private func openModal() {
         let vc = UIViewController()
         vc.view.backgroundColor = .blue
         present(vc, animated: true)
-    }
-    
-    private func setupConstraints() {
-        NSLayoutConstraint.activate([
-            my1Button.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            my1Button.topAnchor.constraint(equalTo: view.topAnchor, constant: 100),
-            my2Button.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            my2Button.topAnchor.constraint(equalTo: my1Button.bottomAnchor, constant: 24),
-            my3Button.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            my3Button.topAnchor.constraint(equalTo: my2Button.bottomAnchor, constant: 24)
-        ])
     }
 }
 

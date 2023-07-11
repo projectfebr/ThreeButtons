@@ -8,49 +8,58 @@
 import UIKit
 
 class BounceButton: UIButton {
+    
     override var isHighlighted: Bool {
-        didSet { if isHighlighted { isHighlighted = false } }
+        didSet {
+            UIView.animate(withDuration: 0.15, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: [.beginFromCurrentState, .allowUserInteraction]) {
+                self.transform = self.isHighlighted ? .init(scaleX: 0.9, y: 0.9) : .identity
+            }
+        }
     }
     
-    convenience init(title: String, imageSystemName: String) {
-        self.init(frame: .zero)
-        setupButton(title: title, imageSystemName: imageSystemName)
+    override func tintColorDidChange() {
+        super.tintColorDidChange()
+        if tintAdjustmentMode == .dimmed {
+            self.imageView?.tintColor = .systemGray3
+            self.setTitleColor(.systemGray3, for: .normal)
+            self.backgroundColor = .systemGray2
+        } else {
+            self.backgroundColor = .systemBlue
+            self.setTitleColor(.white, for: .normal)
+            self.imageView?.tintColor = .white
+        }
     }
+ 
     
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        super.touchesBegan(touches, with: event)
-        touchIn()
-    }
-    
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        super.touchesEnded(touches, with: event)
-        touchEnd()
-    }
-    
-    private func touchIn() {
-        UIView.animate(withDuration: 0.1, delay: 0, options: [.allowUserInteraction, .curveEaseInOut],
-                       animations: {
-            self.transform = .init(scaleX: 0.9, y: 0.9)
-        },
-                       completion: nil)
-    }
-    
-    private func touchEnd() {
-        UIView.animate(withDuration: 0.1, delay: 0, options: [.allowUserInteraction, .curveEaseInOut],
-                       animations: {
-            self.transform = .identity
-        },
-                       completion: nil)
-    }
-    
-    private func setupButton(title: String = "", imageSystemName: String = "") {
-        configuration = .filled()
+    init(title: String) {
+        super.init(frame: .zero)
         setTitle(title, for: .normal)
-        setImage(UIImage(systemName: imageSystemName), for: .normal)
-        configuration = .filled()
-        configuration?.imagePlacement = .trailing
-        configuration?.contentInsets = .init(top: 10, leading: 14, bottom: 10, trailing: 14)
-        configuration?.imagePadding = CGFloat(8)
-        configuration?.titlePadding = .zero
+        setImage(.init(systemName: "arrow.forward.circle")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        setImage(.init(systemName: "arrow.forward.circle")?.withRenderingMode(.alwaysTemplate), for: .highlighted)
+        
+        tintColorDidChange()
+        
+        layer.cornerRadius = 8
+        layer.cornerCurve = .continuous
+        
+        setInsets()
     }
+    
+    func setInsets() {
+        let titleImageSpace: CGFloat = 8
+        
+        contentEdgeInsets = .init(top: 10, left: 14, bottom: 10, right: 14 + titleImageSpace)
+        sizeToFit()
+        
+        let imageWidth = imageView?.frame.width ?? .zero
+        self.titleEdgeInsets = .init(top: 0, left: -imageWidth, bottom: 0, right: imageWidth)
+        let titleWidth = titleLabel?.frame.width ?? .zero
+        self.imageEdgeInsets = .init(top: 0, left: titleWidth + titleImageSpace, bottom: 0, right: -titleWidth - titleImageSpace)
+        
+
+    }
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
 }
